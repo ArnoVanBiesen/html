@@ -564,6 +564,62 @@ class FormBuilder
         return array_merge($options, ['cols' => $segments[0], 'rows' => $segments[1]]);
     }
 
+     /**
+     * Create a select box field.
+     *
+     * @param  string $name
+     * @param  array  $list
+     * @param  string $selected
+     * @param  array  $selectAttributes
+     * @param  array  $optionsAttributes
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function datalist(
+        $name,
+        $list = [],
+        $selected = null,
+        array $datalistAttributes = [],
+        array $optionsAttributes = []
+    ) {
+        $this->type = 'datalist';
+
+        // When building a select box the "value" attribute is really the selected one
+        // so we will use that when checking the model or session for a value which
+        // should provide a convenient method of re-populating the forms on post.
+        $selected = $this->getValueAttribute($name, $selected);
+
+        $datalistAttributes['id'] = $this->getIdAttribute($name, $selectAttributes);
+
+        if (! isset($datalistAttributes['name'])) {
+            $datalistAttributes['name'] = $name;
+        }
+
+        // We will simply loop through the options and build an HTML value for each of
+        // them until we have an array of HTML declarations. Then we will join them
+        // all together into one single HTML element that can be put on the form.
+        $html = [];
+
+        if (isset($datalistAttributes['placeholder'])) {
+            $html[] = $this->placeholderOption($datalistAttributes['placeholder'], $selected);
+            unset($datalistAttributes['placeholder']);
+        }
+
+        foreach ($list as $value => $display) {
+            $optionAttributes = isset($optionsAttributes[$value]) ? $optionsAttributes[$value] : [];
+            $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes);
+        }
+
+        // Once we have all of this HTML, we can join this into a single element after
+        // formatting the attributes into an HTML "attributes" string, then we will
+        // build out a final select statement, which will contain all the values.
+        $datalistAttributes = $this->html->attributes($datalistAttributes);
+
+        $list = implode('', $html);
+
+        return $this->toHtmlString("<datalist{$datalistAttributes}>{$list}</datalist>");
+    }
+
     /**
      * Create a select box field.
      *

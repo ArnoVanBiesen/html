@@ -570,7 +570,7 @@ class FormBuilder
      * @param  string $name
      * @param  array  $list
      * @param  string $selected
-     * @param  array  $selectAttributes
+     * @param  array  $datalistAttributes
      * @param  array  $optionsAttributes
      *
      * @return \Illuminate\Support\HtmlString
@@ -589,7 +589,7 @@ class FormBuilder
         // should provide a convenient method of re-populating the forms on post.
         $selected = $this->getValueAttribute($name, $selected);
 
-        $datalistAttributes['id'] = $this->getIdAttribute($name, $selectAttributes);
+        $datalistAttributes['id'] = $this->getIdAttribute($name, $datalistAttributes);
 
         if (! isset($datalistAttributes['name'])) {
             $datalistAttributes['name'] = $name;
